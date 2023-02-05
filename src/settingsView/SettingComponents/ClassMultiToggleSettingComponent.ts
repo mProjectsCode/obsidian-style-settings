@@ -6,21 +6,19 @@ import {
 	SelectOption,
 } from '../../SettingHandlers';
 import { t } from '../../lang/helpers';
-import { createDescription, getDescription, getTitle } from '../../Utils';
+import { getTitleLocalization } from '../../Utils';
 
 export class ClassMultiToggleSettingComponent extends AbstractSettingComponent {
-	settingEl: Setting;
 	dropdownComponent: DropdownComponent;
 
 	setting: ClassMultiToggle;
 
 	render(containerEl: HTMLElement): void {
-		const title = getTitle(this.setting);
-		const description = getDescription(this.setting);
-
 		if (typeof this.setting.default !== 'string') {
 			return console.error(
-				`${t('Error:')} ${title} ${t('missing default value')}`
+				`${t('Error:')} ${getTitleLocalization(this.setting)} ${t(
+					'missing default value'
+				)}`
 			);
 		}
 
@@ -29,10 +27,8 @@ export class ClassMultiToggleSettingComponent extends AbstractSettingComponent {
 		const defaultLabel = this.getDefaultOptionLabel();
 
 		this.settingEl = new Setting(containerEl);
-		this.settingEl.setName(title);
-		this.settingEl.setDesc(
-			createDescription(description, this.setting.default, defaultLabel)
-		);
+		this.createTitle();
+		this.createDescription(this.setting.default, defaultLabel);
 
 		this.settingEl.addDropdown((dropdown) => {
 			if (this.setting.allowEmpty) {

@@ -1,21 +1,16 @@
 import { AbstractSettingComponent } from './AbstractSettingComponent';
 import { Setting, ToggleComponent } from 'obsidian';
 import { ClassToggle, resetTooltip } from '../../SettingHandlers';
-import { getDescription, getTitle } from '../../Utils';
 
 export class ClassToggleSettingComponent extends AbstractSettingComponent {
-	settingEl: Setting;
 	toggleComponent: ToggleComponent;
 
 	setting: ClassToggle;
 
 	render(containerEl: HTMLElement): void {
-		const title = getTitle(this.setting);
-		const description = getDescription(this.setting);
-
 		this.settingEl = new Setting(containerEl);
-		this.settingEl.setName(title);
-		this.settingEl.setDesc(description ?? '');
+		this.createTitle();
+		this.createDescription();
 
 		this.settingEl.addToggle((toggle) => {
 			const value = this.settingsManager.getSetting(

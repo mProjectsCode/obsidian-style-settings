@@ -6,7 +6,7 @@ export const settingRegExp = /\/\*\s*@settings[\r\n]+?([\s\S]+?)\*\//g;
 export const nameRegExp = /^name:\s*(.+)$/m;
 export type ErrorList = Array<{ name: string; error: string }>;
 
-export function getTitle<T extends Meta>(config: T): string {
+export function getTitleLocalization<T extends Meta>(config: T): string {
 	if (lang) {
 		return config[`title.${lang}` as keyof WithTitle] || config.title;
 	}
@@ -14,7 +14,7 @@ export function getTitle<T extends Meta>(config: T): string {
 	return config.title;
 }
 
-export function getDescription<T extends Meta>(config: T): string {
+export function getDescriptionLocalization<T extends Meta>(config: T): string {
 	if (lang) {
 		return (
 			config[`description.${lang}` as keyof WithDescription] ||
@@ -77,8 +77,8 @@ export function sanitizeText(str: string): string {
 
 export function createDescription(
 	description: string | undefined,
-	def: string,
-	defLabel?: string
+	defaultValue: string,
+	defaultValueLabel?: string
 ): DocumentFragment {
 	const fragment = createFragment();
 
@@ -86,10 +86,12 @@ export function createDescription(
 		fragment.appendChild(document.createTextNode(description));
 	}
 
-	if (def) {
+	if (defaultValue) {
 		const small = createEl('small');
 		small.appendChild(createEl('strong', { text: `${t('Default:')} ` }));
-		small.appendChild(document.createTextNode(defLabel || def));
+		small.appendChild(
+			document.createTextNode(defaultValueLabel || defaultValue)
+		);
 
 		const div = createEl('div');
 

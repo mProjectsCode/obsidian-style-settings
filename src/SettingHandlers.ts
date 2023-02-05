@@ -59,6 +59,7 @@ export interface WithDescription {
 export interface Meta extends WithTitle, WithDescription {
 	id: string;
 	type: SettingType;
+	markdown?: boolean;
 }
 
 export interface Heading extends Meta {

@@ -191,10 +191,10 @@
     pointer-events: none;
 }
 
-.style-settings-info-text .style-settings-markdown :first-child {
+.setting-item-description .style-settings-markdown :first-child {
     margin-top: 0;
 }
 
-.style-settings-info-text .style-settings-markdown :last-child {
+.setting-item-description .style-settings-markdown :last-child {
     margin-bottom: 0;
 }

@@ -1,30 +1,23 @@
 import { AbstractSettingComponent } from './AbstractSettingComponent';
 import { debounce, Setting, SliderComponent } from 'obsidian';
 import { resetTooltip, VariableNumberSlider } from '../../SettingHandlers';
-import { createDescription, getDescription, getTitle } from '../../Utils';
 import { t } from '../../lang/helpers';
 
 export class VariableNumberSliderSettingComponent extends AbstractSettingComponent {
-	settingEl: Setting;
 	sliderComponent: SliderComponent;
 
 	setting: VariableNumberSlider;
 
 	render(containerEl: HTMLElement): void {
-		const title = getTitle(this.setting);
-		const description = getDescription(this.setting);
-
 		if (typeof this.setting.default !== 'number') {
 			return console.error(
-				`${t('Error:')} ${title} ${t('missing default value')}`
+				`${t('Error:')} ${this.setting.title} ${t('missing default value')}`
 			);
 		}
 
 		this.settingEl = new Setting(containerEl);
-		this.settingEl.setName(title);
-		this.settingEl.setDesc(
-			createDescription(description, this.setting.default.toString(10))
-		);
+		this.createTitle();
+		this.createDescription(this.setting.default.toString(10));
 
 		this.settingEl.addSlider((slider) => {
 			const value = this.settingsManager.getSetting(

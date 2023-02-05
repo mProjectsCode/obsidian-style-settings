@@ -12,8 +12,8 @@ import { CSSSettingsTab } from './settingsView/CSSSettingsTab';
 import { SettingsView, viewType } from './settingsView/SettingsView';
 import {
 	ErrorList,
-	getDescription,
-	getTitle,
+	getDescriptionLocalization,
+	getTitleLocalization,
 	nameRegExp,
 	settingRegExp,
 	SettingsSeachResource,
@@ -136,8 +136,8 @@ export default class CSSSettingsPlugin extends Plugin {
 							const settingsSearchResource: SettingsSeachResource = {
 								tab: 'obsidian-style-settings',
 								name: 'Style Settings',
-								text: getTitle(x) ?? '',
-								desc: getDescription(x) ?? '',
+								text: getTitleLocalization(x) ?? '',
+								desc: getDescriptionLocalization(x) ?? '',
 							};
 							return settingsSearchResource;
 						})

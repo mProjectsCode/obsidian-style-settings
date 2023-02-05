@@ -5,32 +5,25 @@ import {
 	SelectOption,
 	VariableSelect,
 } from '../../SettingHandlers';
-import { createDescription, getDescription, getTitle } from '../../Utils';
 import { t } from '../../lang/helpers';
 
 export class VariableSelectSettingComponent extends AbstractSettingComponent {
-	settingEl: Setting;
 	dropdownComponent: DropdownComponent;
 
 	setting: VariableSelect;
 
 	render(containerEl: HTMLElement): void {
-		const title = getTitle(this.setting);
-		const description = getDescription(this.setting);
-
 		if (typeof this.setting.default !== 'string') {
 			return console.error(
-				`${t('Error:')} ${title} ${t('missing default value')}`
+				`${t('Error:')} ${this.setting.title} ${t('missing default value')}`
 			);
 		}
 
 		const defaultLabel = this.getDefaultOptionLabel();
 
 		this.settingEl = new Setting(containerEl);
-		this.settingEl.setName(title);
-		this.settingEl.setDesc(
-			createDescription(description, this.setting.default, defaultLabel)
-		);
+		this.createTitle();
+		this.createDescription(this.setting.default, defaultLabel);
 
 		this.settingEl.addDropdown((dropdown) => {
 			const value = this.settingsManager.getSetting(

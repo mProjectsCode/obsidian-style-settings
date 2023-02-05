@@ -2,9 +2,7 @@ import { AbstractSettingComponent } from './AbstractSettingComponent';
 import { ButtonComponent, Setting } from 'obsidian';
 import { resetTooltip, VariableThemedColor } from '../../SettingHandlers';
 import {
-	getDescription,
 	getPickrSettings,
-	getTitle,
 	isValidDefaultColor,
 	onPickrCancel,
 } from '../../Utils';
@@ -12,23 +10,18 @@ import { t } from '../../lang/helpers';
 import Pickr from '@simonwep/pickr';
 
 export class VariableThemedColorSettingComponent extends AbstractSettingComponent {
-	settingEl: Setting;
-
 	setting: VariableThemedColor;
 
 	pickrLight: Pickr;
 	pickrDark: Pickr;
 
 	render(containerEl: HTMLElement): void {
-		const title = getTitle(this.setting);
-		const description = getDescription(this.setting);
-
 		if (
 			typeof this.setting['default-light'] !== 'string' ||
 			!isValidDefaultColor(this.setting['default-light'])
 		) {
 			return console.error(
-				`${t('Error:')} ${title} ${t(
+				`${t('Error:')} ${this.setting.title} ${t(
 					'missing default light value, or value is not in a valid color format'
 				)}`
 			);
@@ -39,7 +32,7 @@ export class VariableThemedColorSettingComponent extends AbstractSettingComponen
 			!isValidDefaultColor(this.setting['default-dark'])
 		) {
 			return console.error(
-				`${t('Error:')} ${title} ${t(
+				`${t('Error:')} ${this.setting.title} ${t(
 					'missing default dark value, or value is not in a valid color format'
 				)}`
 			);
@@ -69,27 +62,35 @@ export class VariableThemedColorSettingComponent extends AbstractSettingComponen
 		}
 
 		this.settingEl = new Setting(containerEl);
-		this.settingEl.setName(title);
+		this.createTitle();
 
 		// Construct description
-		this.settingEl.descEl.createSpan({}, (span) => {
-			if (description) {
-				span.appendChild(document.createTextNode(description));
-			}
+		const descFragment: DocumentFragment = createFragment();
+
+		this.populateDescriptionFragment(descFragment);
+
+		// crete default value elements
+		const defaultValueDiv = descFragment.createEl('div', {
+			cls: 'style-settings-default-value',
 		});
 
-		this.settingEl.descEl.createDiv({}, (div) => {
-			div.createEl('small', {}, (sm) => {
-				sm.appendChild(createEl('strong', { text: 'Default (light): ' }));
-				sm.appendChild(document.createTextNode(this.setting['default-light']));
-			});
-			div.createEl('br');
-			div.createEl('small', {}, (sm) => {
-				sm.appendChild(createEl('strong', { text: 'Default (dark): ' }));
-				sm.appendChild(document.createTextNode(this.setting['default-dark']));
-			});
-		});
+		const defaultValueSmallLight = defaultValueDiv.createEl('small');
+		defaultValueSmallLight.createEl('strong', { text: `Default (light): ` });
+		defaultValueSmallLight.appendChild(
+			document.createTextNode(this.setting['default-light'])
+		);
 
+		defaultValueDiv.createEl('br');
+
+		const defaultValueSmallDark = defaultValueDiv.createEl('small');
+		defaultValueSmallDark.createEl('strong', { text: `Default (dark): ` });
+		defaultValueSmallDark.appendChild(
+			document.createTextNode(this.setting['default-dark'])
+		);
+
+		this.settingEl.setDesc(descFragment);
+
+		// create color picker wrapper
 		const wrapper = this.settingEl.controlEl.createDiv({
 			cls: 'themed-color-wrapper',
 		});

@@ -1,6 +1,6 @@
 import { AbstractSettingComponent } from './AbstractSettingComponent';
 import { setIcon, Setting } from 'obsidian';
-import { getDescription, getTitle } from '../../Utils';
+import { getTitleLocalization } from '../../Utils';
 import { CSSSetting, Heading } from '../../SettingHandlers';
 import { SettingType } from './types';
 import { CSSSettingsManager } from 'src/SettingsManager';
@@ -109,7 +109,6 @@ export function createSettingComponent(
 export class HeadingSettingComponent extends AbstractSettingComponent {
 	setting: Heading;
 	childEl: HTMLElement | undefined;
-	settingEl: Setting;
 	parent: HeadingSettingComponent;
 	children: AbstractSettingComponent[];
 	filteredChildren: AbstractSettingComponent[];
@@ -124,14 +123,11 @@ export class HeadingSettingComponent extends AbstractSettingComponent {
 	}
 
 	render(containerEl: HTMLElement): void {
-		const title = getTitle(this.setting);
-		const description = getDescription(this.setting);
-
 		this.settingEl = new Setting(containerEl);
 		this.settingEl.setHeading();
 		this.settingEl.setClass('style-settings-heading');
-		this.settingEl.setName(title);
-		this.settingEl.setDesc(description ?? '');
+		this.createTitle();
+		this.createDescription();
 
 		this.settingEl.settingEl.dataset.level = this.setting.level.toString();
 		this.settingEl.settingEl.dataset.id = this.setting.id;
@@ -263,7 +259,7 @@ export class HeadingSettingComponent extends AbstractSettingComponent {
 			b.setTooltip('Export settings');
 			b.extraSettingsEl.onClickEvent((e) => {
 				e.stopPropagation();
-				let title = getTitle(this.setting);
+				let title = getTitleLocalization(this.setting);
 				title =
 					this.sectionName === title ? title : `${this.sectionName} > ${title}`;
 				this.settingsManager.export(

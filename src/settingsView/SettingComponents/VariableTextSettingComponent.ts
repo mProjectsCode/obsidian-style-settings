@@ -1,35 +1,24 @@
 import { AbstractSettingComponent } from './AbstractSettingComponent';
 import { debounce, Setting, TextComponent } from 'obsidian';
 import { resetTooltip, VariableText } from '../../SettingHandlers';
-import {
-	createDescription,
-	getDescription,
-	getTitle,
-	sanitizeText,
-} from '../../Utils';
+import { sanitizeText } from '../../Utils';
 import { t } from '../../lang/helpers';
 
 export class VariableTextSettingComponent extends AbstractSettingComponent {
-	settingEl: Setting;
 	textComponent: TextComponent;
 
 	setting: VariableText;
 
 	render(containerEl: HTMLElement): void {
-		const title = getTitle(this.setting);
-		const description = getDescription(this.setting);
-
 		if (typeof this.setting.default !== 'string') {
 			return console.error(
-				`${t('Error:')} ${title} ${t('missing default value')}`
+				`${t('Error:')} ${this.setting.title} ${t('missing default value')}`
 			);
 		}
 
 		this.settingEl = new Setting(containerEl);
-		this.settingEl.setName(title);
-		this.settingEl.setDesc(
-			createDescription(description, this.setting.default)
-		);
+		this.createTitle();
+		this.createDescription(this.setting.default);
 
 		this.settingEl.addText((text) => {
 			let value = this.settingsManager.getSetting(

@@ -1,7 +1,9 @@
 import { CSSSettingsManager } from '../../SettingsManager';
 import { CSSSetting } from '../../SettingHandlers';
-import { getDescription, getTitle } from '../../Utils';
+import { getDescriptionLocalization, getTitleLocalization } from '../../Utils';
 import fuzzysort from 'fuzzysort';
+import { MarkdownRenderer, Setting } from 'obsidian';
+import { t } from '../../lang/helpers';
 
 export abstract class AbstractSettingComponent {
 	sectionId: string;
@@ -9,6 +11,7 @@ export abstract class AbstractSettingComponent {
 	setting: CSSSetting;
 	settingsManager: CSSSettingsManager;
 	isView: boolean;
+	settingEl: Setting;
 
 	constructor(
 		sectionId: string,
@@ -39,9 +42,9 @@ export abstract class AbstractSettingComponent {
 		}
 
 		return Math.max(
-			fuzzysort.single(str, getTitle(this.setting))?.score ??
+			fuzzysort.single(str, getTitleLocalization(this.setting))?.score ??
 				Number.NEGATIVE_INFINITY,
-			fuzzysort.single(str, getDescription(this.setting))?.score ??
+			fuzzysort.single(str, getDescriptionLocalization(this.setting))?.score ??
 				Number.NEGATIVE_INFINITY
 		);
 	}
@@ -66,4 +69,81 @@ export abstract class AbstractSettingComponent {
 	 * Destroys the component and all it's children.
 	 */
 	abstract destroy(): void;
+
+	/**
+	 * Adds the settings title to the SettingEl.
+	 *
+	 * @protected
+	 */
+	protected createTitle() {
+		if (!this.settingEl) {
+			return;
+		}
+
+		const title = getTitleLocalization(this.setting);
+
+		if (title) {
+			this.settingEl.setName(title);
+		}
+	}
+
+	/**
+	 * Adds the settings description to the SettingEL.
+	 *
+	 * @param defaultValue
+	 * @param defaultValueLabel
+	 * @protected
+	 */
+	protected createDescription(
+		defaultValue?: string,
+		defaultValueLabel?: string
+	) {
+		if (!this.settingEl || !this.setting) {
+			return;
+		}
+
+		const fragment: DocumentFragment = createFragment();
+
+		this.populateDescriptionFragment(fragment);
+
+		if (defaultValue) {
+			const defaultValueDiv = fragment.createEl('div', {
+				cls: 'style-settings-default-value',
+			});
+
+			const defaultValueSmall = defaultValueDiv.createEl('small');
+			defaultValueSmall.createEl('strong', { text: `${t('Default:')} ` });
+			defaultValueSmall.appendChild(
+				document.createTextNode(defaultValueLabel || defaultValue)
+			);
+		}
+
+		this.settingEl.setDesc(fragment);
+	}
+
+	/**
+	 * Populates a document fragment with the elements description.
+	 *
+	 * @param fragment
+	 * @protected
+	 */
+	protected populateDescriptionFragment(fragment: DocumentFragment) {
+		const description = getDescriptionLocalization(this.setting);
+
+		if (description) {
+			if (this.setting.markdown) {
+				const markdownParentEl = fragment.createEl('div', {
+					cls: 'style-settings-markdown',
+				});
+				MarkdownRenderer.renderMarkdown(
+					description,
+					markdownParentEl,
+					'',
+					undefined
+				);
+			} else {
+				fragment.appendChild(document.createTextNode(description));
+			}
+		}
+	}
 }
