@@ -353,7 +353,25 @@ export function buildSettingComponentTree(opts: {
 				) as HeadingSettingComponent;
 			}
 		} else {
-			currentHeading.addChild(setting);
+			if (setting.level == null) {
+				currentHeading.addChild(setting);
+				continue;
+			}
+
+			// If the setting has a level defined, find the fitting heading for it.
+			let headingToAddTo: HeadingSettingComponent = currentHeading;
+
+			if (setting.level < headingToAddTo.setting.level) {
+				while (setting.level < headingToAddTo.setting.level) {
+					headingToAddTo = headingToAddTo.parent;
+				}
+			} else if (setting.level > headingToAddTo.setting.level) {
+				console.warn(
+					`Style Settings | ${sectionId}: Level of setting ("${setting.id}", level ${setting.level}) should not be higher than next previous heading ("${headingToAddTo.setting.id}", level ${headingToAddTo.setting.level}).`
+				);
+			}
+
+			headingToAddTo.addChild(setting);
 		}
 	}
 

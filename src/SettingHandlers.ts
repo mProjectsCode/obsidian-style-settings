@@ -60,6 +60,7 @@ export interface Meta extends WithTitle, WithDescription {
 	id: string;
 	type: SettingType;
 	markdown?: boolean;
+	level?: 0 | 1 | 2 | 3 | 4 | 5 | 6;
 }
 
 export interface Heading extends Meta {
